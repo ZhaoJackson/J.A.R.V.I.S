@@ -1,0 +1,47 @@
+# Core dependencies
+fastapi==0.109.2
+uvicorn==0.27.1
+python-dotenv==1.0.1
+pydantic==2.6.1
+pydantic-settings==2.1.0
+
+# Vision and AI
+opencv-python==4.9.0.80
+numpy==1.26.4
+Pillow==10.2.0
+torch==2.2.0
+transformers==4.37.2
+openai==1.12.0
+
+# N8N Integration
+aiohttp==3.9.3
+requests==2.31.0
+
+# Security
+python-jose==3.3.0
+passlib==1.7.4
+python-multipart==0.0.9
+
+# Additional dependencies
+pydantic-settings==2.1.0
+python-jose[cryptography]==3.3.0
+python-jose[pyjwt]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.9
+httpx==0.26.0
+google-auth==2.27.0
+google-auth-oauthlib==1.2.0
+google-auth-httplib2==0.2.0
+google-api-python-client==2.118.0
+spotipy==2.23.0
+plaid-python==12.4.0
+python-dateutil==2.8.2
+pytz==2024.1
+sqlalchemy==2.0.25
+alembic==1.13.1
+psycopg2-binary==2.9.9
+pytest==8.0.0
+pytest-asyncio==0.23.5
+black==24.1.1
+isort==5.13.2
+flake8==7.0.0 
