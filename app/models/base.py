@@ -1,38 +1,34 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.orm import declarative_base, sessionmaker
 import os
 from dotenv import load_dotenv
-import sys
 
 load_dotenv()
 
-# Try to use psycopg2 first, fall back to asyncpg if not available
-try:
-    import psycopg2
-    SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/jarvis")
-except ImportError:
-    try:
-        import asyncpg
-        SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5432/jarvis")
-    except ImportError:
-        # Fallback to SQLite if neither PostgreSQL driver is available
-        SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./jarvis.db")
+# Use SQLite as default, but allow PostgreSQL via environment variable
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite+aiosqlite:///./jarvis.db")
 
-# Create engine with appropriate settings
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL,
-    pool_pre_ping=True,  # Enable connection health checks
-    pool_recycle=3600,   # Recycle connections after 1 hour
+# Create async engine
+engine = create_async_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,
+    pool_recycle=3600,
+    echo=False
 )
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Create async session factory
+async_session = sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False
+)
+
 Base = declarative_base()
 
 # Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close() 
+async def get_db():
+    async with async_session() as session:
+        try:
+            yield session
+        finally:
+            await session.close() 
