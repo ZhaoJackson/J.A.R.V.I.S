@@ -6,7 +6,9 @@ streamlit==1.28.2
 # Database
 sqlalchemy==2.0.23
 alembic==1.12.1
-psycopg2-binary==2.9.9
+psycopg2-binary==2.9.9; python_version < '3.13'
+psycopg2-binary==2.9.9; python_version >= '3.13' and platform_system != 'Linux'
+asyncpg==0.29.0  # Added as a fallback for PostgreSQL connections
 
 # Azure Integration
 openai==1.12.0
