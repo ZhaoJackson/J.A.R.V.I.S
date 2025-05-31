@@ -35,4 +35,7 @@ ENV/
 config/
 data/
 *.log
+
+# macOS
 .DS_Store
+**/.DS_Store
