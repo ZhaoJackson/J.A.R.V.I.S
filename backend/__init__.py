@@ -1,3 +1,0 @@
-"""
-JARVIS Backend Package
-""" 
