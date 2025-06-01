@@ -51,6 +51,8 @@ st.markdown("Your AI-powered personal assistant for health and finance managemen
 # Create tabs
 tab1, tab2, tab3 = st.tabs(["Dashboard", "Health", "Finance"])
 
+# ...existing code...
+
 with tab1:
     st.header("Dashboard")
     
@@ -74,31 +76,43 @@ with tab1:
     # Placeholder for charts
     st.subheader("Trends")
     
-    # Generate dates for the selected range
-    dates = pd.date_range(start=date_range[0], end=date_range[1])
-    n_days = len(dates)
-    
-    # Generate sample data with the same length as dates
-    chart_data = pd.DataFrame({
-        'Date': dates,
-        'Sleep': np.random.normal(7.5, 0.5, n_days),  # Mean 7.5 hours, std 0.5
-        'Steps': np.random.normal(8500, 500, n_days),  # Mean 8500 steps, std 500
-        'Expenses': np.random.normal(3500, 200, n_days)  # Mean $3500, std $200
-    })
-    
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=chart_data['Date'], y=chart_data['Sleep'], name='Sleep Hours'))
-    fig.add_trace(go.Scatter(x=chart_data['Date'], y=chart_data['Steps']/1000, name='Steps (K)'))
-    fig.add_trace(go.Scatter(x=chart_data['Date'], y=chart_data['Expenses']/1000, name='Expenses (K)'))
-    
-    fig.update_layout(
-        title="Health and Finance Trends",
-        xaxis_title="Date",
-        yaxis_title="Value",
-        hovermode="x unified"
-    )
-    
-    st.plotly_chart(fig, use_container_width=True)
+    # Check if date_range is valid
+    try:
+        start_date, end_date = date_range
+        if start_date > end_date:
+            st.error("Wrong date span, please choose a valid date range.")
+        else:
+            # Generate dates for the selected range
+            dates = pd.date_range(start=start_date, end=end_date)
+            n_days = len(dates)
+            if n_days == 0:
+                st.error("Wrong date span, please choose a valid date range.")
+            else:
+                # Generate sample data with the same length as dates
+                chart_data = pd.DataFrame({
+                    'Date': dates,
+                    'Sleep': np.random.normal(7.5, 0.5, n_days),  # Mean 7.5 hours, std 0.5
+                    'Steps': np.random.normal(8500, 500, n_days),  # Mean 8500 steps, std 500
+                    'Expenses': np.random.normal(3500, 200, n_days)  # Mean $3500, std $200
+                })
+                
+                fig = go.Figure()
+                fig.add_trace(go.Scatter(x=chart_data['Date'], y=chart_data['Sleep'], name='Sleep Hours'))
+                fig.add_trace(go.Scatter(x=chart_data['Date'], y=chart_data['Steps']/1000, name='Steps (K)'))
+                fig.add_trace(go.Scatter(x=chart_data['Date'], y=chart_data['Expenses']/1000, name='Expenses (K)'))
+                
+                fig.update_layout(
+                    title="Health and Finance Trends",
+                    xaxis_title="Date",
+                    yaxis_title="Value",
+                    hovermode="x unified"
+                )
+                
+                st.plotly_chart(fig, use_container_width=True)
+    except Exception:
+        st.error("Wrong date span, please choose a valid date range.")
+
+# ...existing code...
 
 with tab2:
     st.header("Health Tracking")
