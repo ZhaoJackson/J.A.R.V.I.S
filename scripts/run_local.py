@@ -5,11 +5,6 @@ from pathlib import Path
 
 def setup_local_env():
     """Set up local development environment."""
-    # Create necessary directories
-    Path("data").mkdir(exist_ok=True)
-    Path("logs").mkdir(exist_ok=True)
-    
-    # Set environment variables for local development
     os.environ["STREAMLIT_CLOUD"] = "0"
     os.environ["DEBUG"] = "1"
 
