@@ -1,39 +1,26 @@
-# Web Framework
-fastapi>=0.104.1
-uvicorn>=0.24.0
-streamlit>=1.28.2
+fastapi==0.110.1
+uvicorn[standard]==0.29.0
+pydantic==1.10.13
+python-multipart==0.0.9
+sqlite-utils==3.36
 
-# Database
-sqlalchemy>=2.0.23
-alembic>=1.12.1
-asyncpg>=0.29.0
+# For future Computer Vision behavior tracking
+opencv-python==4.9.0.80
 
-# Azure Integration
-openai>=1.12.0
-azure-identity>=1.15.0
-azure-storage-blob>=12.19.0
+# For facial emotion detection (optional, placeholder)
+deepface==0.0.79
 
-# Web Scraping
-beautifulsoup4>=4.12.2
-requests>=2.31.0
+# Spotify integration
+spotipy==2.23.0
 
-# Utilities
-python-dotenv>=1.0.0
-pydantic>=2.5.2
-numpy>=1.24.3
-pandas>=1.5.3
-plotly>=5.18.0
-tomli>=2.0.1
+# Telegram bot
+python-telegram-bot==20.7
 
-# Build Dependencies
-setuptools>=69.0.3
-wheel>=0.42.0
+# For web scraping AI news or LinkedIn
+beautifulsoup4==4.12.3
+requests==2.31.0
+lxml==5.2.1
 
-# Testing
-pytest>=7.4.3
-pytest-asyncio>=0.21.1
+python-dotenv
 
-# Development
-black>=23.11.0
-flake8>=6.1.0
-isort>=5.12.0 
+requests

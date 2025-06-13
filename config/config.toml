@@ -1,6 +1,0 @@
-# Azure OpenAI Configuration
-[azure_openai]
-api_key = "4gM2HRtaDIsFbDjfQQl1DAO1RzN4l2TfAcmkIuC0KgcEjmsEOS9yJQQJ99BBACHYHv6XJ3w3AAAAACOGpcKh"
-endpoint = "https://ppbai6350320563.openai.azure.com"
-api_version = "2024-12-01-preview"
-deployment = "gpt-4o"
