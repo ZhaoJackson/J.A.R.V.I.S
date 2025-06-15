@@ -12,21 +12,37 @@ J.A.R.V.I.S. is a modular FastAPI-based personal assistant that detects mood fro
 
 ```
 J.A.R.V.I.S/
+├── main.py                    
+├── bot_launcher.py            
+├── requirements.txt
+├── .env
 │
-├── main.py                       # FastAPI main app
-├── requirements.txt              # Python dependencies
-├── commonconst.py                # Global variables and paths
-│
-├── router/
-│   ├── log_routes.py             # Logs diary entries and moods
-│   ├── mood_routes.py            # Detects mood and plays music
-│   ├── music_routes.py           # Manually play music by mood
-│   └── interaction/
-│       └── music_vs_mood.py      # Helper for LLM + Spotify logic
+├── src/
+│   ├── application/           
+│   │   ├── mood_analyzer.py   
+│   │   ├── spotify_player.py      
+│   │   └── db_manager.py         
+│   │
+│   ├── interaction/
+│   │   └── music_mood/
+│   │       └── music_vs_mood.py
+│   │
+│   ├── voice_manager/
+│   │   └── voice_routes.py
+│   │
+│   ├── telegram/
+│   │   └── handler.py
+│   │
+│   └── fastapi_routes/
+│       ├── log_routes.py
+│       ├── mood_routes.py
+│       └── music_routes.py
 │
 ├── db/
-│   └── jarvis_logs.db            # SQLite database (auto-generated)
-└── .env                          # Secret keys (not committed)
+│   ├── diary.db
+│   ├── mood.db
+│   ├── music.db
+│   └── chat_history.db
 ```
 
 ---
