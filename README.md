@@ -73,13 +73,23 @@ pip install -r requirements.txt
 
 ---
 
-### 3. Run the Server
+### 3. Run the Server for FastAPI
 
 ```bash
 uvicorn main:app --reload --port 8001
 ```
 
 FastAPI app will be available at: [http://127.0.0.1:8001/docs](http://127.0.0.1:8001/docs)
+
+### 4. run telegram app via running bot_launcher.py
+
+### 5. Run the ngrok for voice interaction
+
+```bash
+ngrok http 8001
+```
+
+ngrok app will be available at: [https://4e55-209-2-47-30.ngrok-free.app](https://4e55-209-2-47-30.ngrok-free.app)
 
 ---
 
