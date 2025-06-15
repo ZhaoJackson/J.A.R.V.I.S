@@ -1,5 +1,4 @@
 # src/routes/mood_routes.py
-
 from fastapi import APIRouter
 from pydantic import BaseModel
 from src.application.mood_analyzer import analyze_mood_from_text
