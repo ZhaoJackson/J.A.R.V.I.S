@@ -1,26 +1,15 @@
-# Python
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Environment
 .env
 .venv
 env/
 venv/
-
-# IDE
 .vscode/
 .idea/
-
-# OS
 .DS_Store
 **/.DS_Store
-
-# Database
 *.db
-!health_finance.db
-
-# Output directory
 output/*
 !output/.gitkeep
+.cache
