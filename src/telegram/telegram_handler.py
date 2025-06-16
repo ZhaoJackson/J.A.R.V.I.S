@@ -3,36 +3,34 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 from src.commonconst import TELEGRAM_BOT_TOKEN
-from src.application.mood_analyzer import analyze_mood_from_text
-from src.application.music_player import play_music_by_mood
-
+from src.interaction.music_mood.music_vs_mood import play_music_by_emotional_text
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
-    Responds to any user message with mood analysis and music playback.
+    Responds to user text with mood analysis and Spotify playlist playback.
     """
     user_input = update.message.text.strip()
+    chat_id = update.effective_chat.id
+
     if not user_input:
-        await context.bot.send_message(chat_id=update.effective_chat.id, text="⚠️ Please send some text.")
+        await context.bot.send_message(chat_id=chat_id, text="⚠️ Please send some text.")
         return
 
-    mood = analyze_mood_from_text(user_input)
-    result = play_music_by_mood(mood)
+    result = play_music_by_emotional_text(user_input)
 
-    if "error" in result:
-        reply = f"⚠️ Could not play music: {result['error']}"
+    # Compose response message
+    if result["status"] == "playing":
+        mood = result.get("mood", "unknown")
+        device = result.get("device", "your Spotify device")
+        reply = f"🎧 Mood detected: *{mood}*.\nNow playing music on *{device}*."
     else:
-        reply = (
-            f"🎧 I detected your mood as *{mood}*.\n"
-            f"Now playing music on *{result.get('device', 'an active device')}*."
-        )
+        reply = f"⚠️ Could not play music.\nReason: {result.get('message')}"
 
-    await context.bot.send_message(chat_id=update.effective_chat.id, text=reply, parse_mode="Markdown")
-
+    await context.bot.send_message(chat_id=chat_id, text=reply, parse_mode="Markdown")
 
 def run_telegram_bot():
     """
-    Initializes and starts the Telegram bot.
+    Starts the Telegram bot using polling.
     """
     app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))

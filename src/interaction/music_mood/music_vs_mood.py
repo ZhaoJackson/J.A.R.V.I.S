@@ -1,67 +1,57 @@
 # src/application/music_vs_mood.py
 
-from src.commonconst import (
-    SPOTIPY_CLIENT_ID,
-    SPOTIPY_CLIENT_SECRET,
-    SPOTIPY_REDIRECT_URI,
-    SPOTIFY_SCOPE,
-    OLLAMA_URL,
-    OLLAMA_MODEL,
-    MOOD_PLAYLISTS
-)
-import spotipy
-from spotipy.oauth2 import SpotifyOAuth
-import requests
+from src.application.mood_analyzer import analyze_mood
+from src.application.music_player import get_spotify_client
+from src.application.db_manager import log_mood_analysis, log_music_playback
+from src.commonconst import MOOD_PLAYLISTS
 
-# === Spotify Authorization ===
-sp = spotipy.Spotify(auth_manager=SpotifyOAuth(
-    client_id=SPOTIPY_CLIENT_ID,
-    client_secret=SPOTIPY_CLIENT_SECRET,
-    redirect_uri=SPOTIPY_REDIRECT_URI,
-    scope=SPOTIFY_SCOPE
-))
+def play_music_by_emotional_text(text: str) -> dict:
+    """
+    Given emotional diary input, infer mood, log analysis, and play music.
+    """
+    # Step 1: Detect mood from text
+    mood = analyze_mood(text)
 
-def analyze_mood_from_diary(diary_entry: str) -> str:
-    """
-    Send diary entry to Ollama model and return a simplified mood tag.
-    """
-    prompt = (
-        "You are a mood analysis assistant. Given the following diary entry, return ONLY one word from:\n"
-        "[happy, sad, calm, angry, focused].\n\n"
-        f'Diary Entry: "{diary_entry}"\n\nRespond with only the word.'
-    )
+    # Step 2: Log mood analysis
+    log_mood_analysis(text, mood)
+
+    # Step 3: Look up playlist
+    playlist_uri = MOOD_PLAYLISTS.get(mood)
+    if not playlist_uri:
+        return {
+            "status": "error",
+            "mood": mood,
+            "message": f"No playlist found for detected mood: '{mood}'"
+        }
+
+    # Step 4: Play playlist via Spotify
     try:
-        response = requests.post(OLLAMA_URL, json={
-            "model": OLLAMA_MODEL,
-            "prompt": prompt,
-            "stream": False
-        })
-        mood = response.json().get("response", "").strip().lower()
-        return mood if mood in MOOD_PLAYLISTS else "calm"
-    except Exception as e:
-        print("⚠️ Mood detection failed:", e)
-        return "calm"
-
-def play_music_by_mood(mood: str) -> dict:
-    """
-    Selects and plays a Spotify playlist based on the mood.
-    """
-    try:
-        profile = sp.current_user()
-        if profile.get("product") != "premium":
-            return {"error": f"Spotify Premium required. Your plan: {profile.get('product')}"}
-
-        playlist_uri = MOOD_PLAYLISTS.get(mood)
-        if not playlist_uri:
-            return {"error": f"Unsupported mood '{mood}'."}
-
+        sp = get_spotify_client()
         devices = sp.devices().get("devices", [])
         if not devices:
-            return {"error": "No active Spotify devices found."}
+            return {
+                "status": "error",
+                "mood": mood,
+                "message": "No active Spotify devices found."
+            }
 
         device = next((d for d in devices if d["is_active"]), devices[0])
         sp.start_playback(device_id=device["id"], context_uri=playlist_uri)
 
-        return {"status": "playing", "mood": mood, "device": device["name"]}
+        # Step 5: Log music playback
+        log_music_playback(mood, playlist_uri, device["name"])
+
+        return {
+            "status": "playing",
+            "mood": mood,
+            "playlist": playlist_uri,
+            "device": device["name"],
+            "message": f"🎵 Now playing a '{mood}' playlist on {device['name']}"
+        }
+
     except Exception as e:
-        return {"error": f"Spotify playback failed: {e}"}
+        return {
+            "status": "error",
+            "mood": mood,
+            "message": f"Playback failed: {e}"
+        }

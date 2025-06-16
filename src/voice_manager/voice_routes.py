@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
 from src.application.mood_analyzer import *
-from src.application.music_player import play_music_by_mood
+from src.application.music_player import play_song_by_name
 from src.commonconst import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
 import requests
 

@@ -15,7 +15,7 @@ load_dotenv()
 
 # === Paths ===
 BASE_DIR = Path(__file__).resolve().parent.parent
-DB_DIR = BASE_DIR.parent / "db"
+DB_DIR = BASE_DIR / "db"
 DB_DIR.mkdir(exist_ok=True)
 
 # Database File Paths

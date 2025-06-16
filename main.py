@@ -1,14 +1,24 @@
 # main.py
-from src.commonconst import *
+
+import os
+from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from src.commonconst import DB_DIR
+from src.application.db_manager import *
 from src.routes.log_routes import router as log_router
 from src.routes.music_routes import router as music_router
 from src.routes.mood_routes import router as mood_router
 from src.voice_manager.voice_routes import router as voice_router
-from src.application.db_manager import *
+from src.routes.music_mood_routes import router as music_mood_router
+
+os.makedirs(DB_DIR, exist_ok=True)
 
 # === Initialize FastAPI ===
-app = FastAPI()
+app = FastAPI(
+    title="J.A.R.V.I.S. API",
+    description="Your mood-aware music assistant powered by FastAPI + Ollama + Spotify",
+    version="1.0.0"
+)
 
 @app.get("/", response_class=HTMLResponse)
 async def root():
@@ -20,12 +30,13 @@ async def root():
             <p>Your FastAPI server is running.</p>
             <p>Available endpoints:</p>
             <ul>
-                <li><code>POST /api/voice-input</code></li>
-                <li><code>POST /api/music</code></li>
-                <li><code>POST /api/analyze-mood</code></li>
-                <li><code>POST /api/log/diary</code></li>
-                <li><code>POST /api/log/chat</code></li>
+                <li><code>POST /api/mood/analyze</code> - Analyze your emotion using Ollama</li>
+                <li><code>POST /api/music/play-song</code> - Play a specific Spotify song by name</li>
+                <li><code>POST /api/log/diary</code> - Log your diary entry</li>
+                <li><code>POST /api/log/chat</code> - Log your chat interaction</li>
+                <li><code>POST /api/voice-input</code> - Submit voice to trigger diary/music flow</li>
             </ul>
+            <p>Visit <a href="/docs">/docs</a> for Swagger UI</p>
         </body>
     </html>
     """
@@ -33,10 +44,11 @@ async def root():
 # === Ensure DB Folder Exists ===
 os.makedirs(DB_DIR, exist_ok=True)
 
-# === Register Route Modules ===
-app.include_router(log_router, prefix="/api")
-app.include_router(music_router, prefix="/api")
+# === Register All Route Modules ===
 app.include_router(mood_router, prefix="/api")
+app.include_router(music_router, prefix="/api")
+app.include_router(log_router, prefix="/api")
 app.include_router(voice_router, prefix="/api")
+app.include_router(music_mood_router, prefix="/api")
 
 print("🚀 J.A.R.V.I.S FastAPI backend running!")
