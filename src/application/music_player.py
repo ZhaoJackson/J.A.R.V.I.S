@@ -19,7 +19,6 @@ def get_spotify_client() -> Spotify:
         scope=SPOTIFY_SCOPE
     ))
 
-
 # === Play Track by URI (Renamed for clarity) ===
 def play_song_by_uri(uri: str) -> dict:
     sp = get_spotify_client()
@@ -34,7 +33,6 @@ def play_song_by_uri(uri: str) -> dict:
         return {"status": "playing", "device": device["name"]}
     except Exception as e:
         return {"status": "error", "message": f"Playback failed: {e}"}
-
 
 # === Play Song by Keyword Search ===
 def search_and_play_by_keyword(keyword: str) -> dict:
@@ -67,7 +65,6 @@ def search_and_play_by_keyword(keyword: str) -> dict:
             "device": None,
             "playlist": None
         }
-
 
 # === Fetch Tracks from Playlist ID ===
 def get_tracks_from_playlist(playlist_id: str) -> List[Dict]:

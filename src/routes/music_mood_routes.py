@@ -6,11 +6,9 @@ from src.interaction.music_mood.music_vs_mood import play_music_by_emotion_text
 
 router = APIRouter()
 
-
 # === Request Model ===
 class EmotionInput(BaseModel):
     text: str = Field(..., description="Describe your emotional state, e.g. 'I feel calm and nostalgic'")
-
 
 # === Response Model ===
 class EmotionMusicResponse(BaseModel):
@@ -19,7 +17,6 @@ class EmotionMusicResponse(BaseModel):
     message: str
     device: str | None = None
     playlist: str | None = None
-
 
 # === Endpoint: Emotion ➜ Music ===
 @router.post("/music/from-emotion", response_model=EmotionMusicResponse, tags=["Music"])

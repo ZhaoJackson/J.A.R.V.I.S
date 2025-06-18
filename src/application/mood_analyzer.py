@@ -1,5 +1,4 @@
 # src/application/mood_analyzer.py
-
 import requests
 from src.commonconst import OLLAMA_URL, OLLAMA_MODEL
 
@@ -33,7 +32,7 @@ def analyze_mood_profile(text: str) -> dict:
 
         return {"mood": mood_clean if mood_clean in [
             "Nostalgia", "Energy", "Focus", "Calm", "Happy"
-        ] else "Calm"}  # fallback to Calm if invalid
+        ] else "Calm"}
 
     except Exception as e:
         print("❌ analyze_mood_profile failed:", e)

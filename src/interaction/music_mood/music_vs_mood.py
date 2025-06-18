@@ -1,15 +1,9 @@
 import random
 from typing import Dict
-
 from src.application.mood_analyzer import analyze_mood_profile
-from src.application.music_player import (
-    get_tracks_from_playlist,
-    play_song_by_uri,
-    search_and_play_by_keyword
-)
+from src.application.music_player import (get_tracks_from_playlist, play_song_by_uri, search_and_play_by_keyword)
 from src.application.db_manager import log_music_playback
 from src.commonconst import SPOTIFY_PLAYLISTS
-
 
 def get_random_song_from_playlist(playlist_id: str) -> Dict:
     tracks = get_tracks_from_playlist(playlist_id)
@@ -22,10 +16,6 @@ def get_random_song_from_playlist(playlist_id: str) -> Dict:
         "artist": track["artist"],
         "uri": track["uri"]
     }
-
-
-# def match_playlist_for_mood(mood: str) -> str | None:
-#     return SPOTIFY_PLAYLISTS.get(mood.strip().lower())
 
 def match_playlist_for_mood(mood: str) -> str | None:
     mood_clean = mood.strip().lower()
