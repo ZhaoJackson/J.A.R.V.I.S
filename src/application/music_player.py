@@ -1,4 +1,5 @@
-# # src/application/music_player.py
+# src/application/music_player.py
+
 from typing import List, Dict
 from spotipy import Spotify
 from spotipy.oauth2 import SpotifyOAuth
@@ -19,7 +20,7 @@ def get_spotify_client() -> Spotify:
         scope=SPOTIFY_SCOPE
     ))
 
-# === Play Track by URI (Renamed for clarity) ===
+# === Play One Song by URI ===
 def play_song_by_uri(uri: str) -> dict:
     sp = get_spotify_client()
     try:
@@ -34,7 +35,25 @@ def play_song_by_uri(uri: str) -> dict:
     except Exception as e:
         return {"status": "error", "message": f"Playback failed: {e}"}
 
-# === Play Song by Keyword Search ===
+# === Play All Songs from Playlist Randomly ===
+def play_entire_playlist(playlist_id: str) -> dict:
+    sp = get_spotify_client()
+    try:
+        devices = sp.devices().get("devices", [])
+        if not devices:
+            return {"status": "error", "message": "No active Spotify devices found."}
+
+        device = next((d for d in devices if d["is_active"]), devices[0])
+
+        # Start playback of entire playlist with shuffle mode ON
+        sp.shuffle(state=True, device_id=device["id"])
+        sp.start_playback(device_id=device["id"], context_uri=f"spotify:playlist:{playlist_id}")
+
+        return {"status": "playing", "device": device["name"]}
+    except Exception as e:
+        return {"status": "error", "message": f"Playlist playback failed: {e}"}
+
+# === Search and Play by Keyword ===
 def search_and_play_by_keyword(keyword: str) -> dict:
     sp = get_spotify_client()
     try:

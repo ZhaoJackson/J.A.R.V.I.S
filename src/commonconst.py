@@ -2,6 +2,10 @@
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+from sentence_transformers import SentenceTransformer, util
+
+# Load once globally
+EMBEDDING_MODEL = SentenceTransformer("all-MiniLM-L6-v2")  # Fast and accurate
 
 # === Load .env Configuration ===
 load_dotenv()
@@ -50,3 +54,6 @@ SPOTIFY_PLAYLISTS = {
     "calm": "3e64Rwz2pANOsr2LuglfCq",
     "happy": "3Ddkjjj1BHXEPHnkIfBtfg"
 }
+
+# === NLP Model ===
+EMBEDDING_MODEL = SentenceTransformer("all-MiniLM-L6-v2")

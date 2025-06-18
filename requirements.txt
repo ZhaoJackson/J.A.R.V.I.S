@@ -11,3 +11,4 @@ requests==2.31.0
 lxml==5.2.1
 python-dotenv
 requests
+sentence-transformers
