@@ -1,57 +1,91 @@
-# src/application/music_vs_mood.py
+import random
+from typing import Dict
 
-from src.application.mood_analyzer import analyze_mood
-from src.application.music_player import get_spotify_client
-from src.application.db_manager import log_mood_analysis, log_music_playback
-from src.commonconst import MOOD_PLAYLISTS
+from src.application.mood_analyzer import analyze_mood_profile
+from src.application.music_player import (
+    get_tracks_from_playlist,
+    play_song_by_uri,
+    search_and_play_by_keyword
+)
+from src.application.db_manager import log_music_playback
+from src.commonconst import SPOTIFY_PLAYLISTS
 
-def play_music_by_emotional_text(text: str) -> dict:
-    """
-    Given emotional diary input, infer mood, log analysis, and play music.
-    """
-    # Step 1: Detect mood from text
-    mood = analyze_mood(text)
 
-    # Step 2: Log mood analysis
-    log_mood_analysis(text, mood)
+def get_random_song_from_playlist(playlist_id: str) -> Dict:
+    tracks = get_tracks_from_playlist(playlist_id)
+    if not tracks:
+        return {}
 
-    # Step 3: Look up playlist
-    playlist_uri = MOOD_PLAYLISTS.get(mood)
-    if not playlist_uri:
-        return {
-            "status": "error",
-            "mood": mood,
-            "message": f"No playlist found for detected mood: '{mood}'"
-        }
+    track = random.choice(tracks)
+    return {
+        "name": track["name"],
+        "artist": track["artist"],
+        "uri": track["uri"]
+    }
 
-    # Step 4: Play playlist via Spotify
+
+# def match_playlist_for_mood(mood: str) -> str | None:
+#     return SPOTIFY_PLAYLISTS.get(mood.strip().lower())
+
+def match_playlist_for_mood(mood: str) -> str | None:
+    mood_clean = mood.strip().lower()
+    for key in SPOTIFY_PLAYLISTS:
+        if key.lower() == mood_clean:
+            return SPOTIFY_PLAYLISTS[key]
+    return None
+
+def play_music_by_emotion_text(text: str) -> Dict:
     try:
-        sp = get_spotify_client()
-        devices = sp.devices().get("devices", [])
-        if not devices:
+        # Step 1: Get mood label from LLM
+        mood_result = analyze_mood_profile(text)
+        mood = mood_result.get("mood", "Calm")
+
+        # Step 2: Match playlist
+        playlist_id = match_playlist_for_mood(mood)
+
+        if playlist_id:
+            song = get_random_song_from_playlist(playlist_id)
+            if not song:
+                return {
+                    "status": "error",
+                    "mood": mood,
+                    "message": f"No songs available in playlist for '{mood}'.",
+                    "device": None,
+                    "playlist": mood
+                }
+
+            result = play_song_by_uri(song["uri"])
+            if result["status"] != "playing":
+                return {
+                    "status": "error",
+                    "mood": mood,
+                    "message": result.get("message", "Playback failed."),
+                    "device": None,
+                    "playlist": mood
+                }
+
+            log_music_playback(mood, song["uri"], result.get("device", "unknown"))
+
             return {
-                "status": "error",
+                "status": "success",
                 "mood": mood,
-                "message": "No active Spotify devices found."
+                "message": f"Now playing '{song['name']}' by {song['artist']}",
+                "device": result.get("device"),
+                "playlist": mood
             }
 
-        device = next((d for d in devices if d["is_active"]), devices[0])
-        sp.start_playback(device_id=device["id"], context_uri=playlist_uri)
-
-        # Step 5: Log music playback
-        log_music_playback(mood, playlist_uri, device["name"])
-
+        # Step 3: Fallback search
+        fallback_result = search_and_play_by_keyword(mood)
         return {
-            "status": "playing",
-            "mood": mood,
-            "playlist": playlist_uri,
-            "device": device["name"],
-            "message": f"🎵 Now playing a '{mood}' playlist on {device['name']}"
+            **fallback_result,
+            "mood": mood
         }
 
     except Exception as e:
         return {
             "status": "error",
-            "mood": mood,
-            "message": f"Playback failed: {e}"
+            "mood": "unknown",
+            "message": f"Unexpected error: {str(e)}",
+            "device": None,
+            "playlist": None
         }

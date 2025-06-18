@@ -3,7 +3,7 @@
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
 from src.commonconst import TELEGRAM_BOT_TOKEN
-from src.interaction.music_mood.music_vs_mood import play_music_by_emotional_text
+from src.interaction.music_mood.music_vs_mood import play_music_by_emotion_text
 
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
@@ -16,13 +16,27 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await context.bot.send_message(chat_id=chat_id, text="⚠️ Please send some text.")
         return
 
-    result = play_music_by_emotional_text(user_input)
+    result = play_music_by_emotion_text(user_input)
 
-    # Compose response message
-    if result["status"] == "playing":
+    if result["status"] == "success":
         mood = result.get("mood", "unknown")
         device = result.get("device", "your Spotify device")
-        reply = f"🎧 Mood detected: *{mood}*.\nNow playing music on *{device}*."
+        playlist = result.get("playlist", "unknown")
+
+        if playlist.startswith("Search:"):
+            reply = (
+                f"🎧 *Mood:* {mood}\n"
+                f"🔎 No exact playlist match. Used search for: *{mood}*\n"
+                f"📱 *Device:* {device}\n\n"
+                f"{result.get('message')}"
+            )
+        else:
+            reply = (
+                f"🎧 *Mood:* {mood}\n"
+                f"💽 *Playlist:* {playlist}\n"
+                f"📱 *Device:* {device}\n\n"
+                f"{result.get('message')}"
+            )
     else:
         reply = f"⚠️ Could not play music.\nReason: {result.get('message')}"
 
