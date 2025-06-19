@@ -2,7 +2,7 @@
 
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, filters
-from src.commonconst import TELEGRAM_BOT_TOKEN
+from src.commonconst import TELEGRAM_BOT_TOKEN_MUSIC
 from src.interaction.music_mood.music_vs_mood import play_music_by_emotion_text
 from src.application.db_manager import log_chat_message
 
@@ -57,7 +57,7 @@ def run_telegram_bot():
     """
     Starts the Telegram bot using polling mode.
     """
-    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN_MUSIC).build()
     app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
 
     print("🤖 Telegram bot is running and listening for emotions...")

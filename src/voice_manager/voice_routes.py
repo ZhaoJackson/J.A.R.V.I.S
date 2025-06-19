@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from src.application.mood_analyzer import *
 from src.application.music_player import play_song_by_uri
-from src.commonconst import TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+from src.commonconst import TELEGRAM_BOT_TOKEN_MUSIC, TELEGRAM_CHAT_ID_MUSIC
 import requests
 
 router = APIRouter()
@@ -43,6 +43,6 @@ def send_to_telegram_log(user_input: str, mood: str, result: dict):
         f"Detected Mood: {mood}\n"
         f"Music: {result.get('status', result.get('error', 'unknown'))}"
     )
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": message}
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN_MUSIC}/sendMessage"
+    payload = {"chat_id": TELEGRAM_CHAT_ID_MUSIC, "text": message}
     requests.post(url, json=payload)

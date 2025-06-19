@@ -18,7 +18,7 @@ os.makedirs(DB_DIR, exist_ok=True)
 
 # === Initialize FastAPI Application ===
 app = FastAPI(
-    title="J.A.R.V.I.S. API",
+    title="J.A.R.V.I.S.",
     description="Your mood-aware music assistant powered by FastAPI + Ollama + Spotify",
     version="1.0.0"
 )

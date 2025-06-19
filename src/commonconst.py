@@ -5,7 +5,7 @@ from pathlib import Path
 from sentence_transformers import SentenceTransformer, util
 
 # Load once globally
-EMBEDDING_MODEL = SentenceTransformer("all-MiniLM-L6-v2")  # Fast and accurate
+EMBEDDING_MODEL = SentenceTransformer("all-MiniLM-L6-v2")
 
 # === Load .env Configuration ===
 load_dotenv()
@@ -39,9 +39,9 @@ SPOTIFY_SCOPE = (
 )
 SPOTIFY_PLAY_ENDPOINT = os.getenv("SPOTIFY_PLAY_ENDPOINT")
 
-# === Telegram Bot Integration ===
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+# === Telegram Bot Integration for Music ===
+TELEGRAM_BOT_TOKEN_MUSIC = os.getenv("TELEGRAM_BOT_TOKEN_MUSIC")
+TELEGRAM_CHAT_ID_MUSIC = os.getenv("TELEGRAM_CHAT_ID_MUSIC")
 
 # === Voice Assistant API (Optional) ===
 LOVABLE_API_URL = os.getenv("LOVABLE_API_URL")
