@@ -48,11 +48,12 @@ LOVABLE_API_URL = os.getenv("LOVABLE_API_URL")
 
 # === Primary Playlist Mapping (Used by You) ===
 SPOTIFY_PLAYLISTS = {
-    "nostalgia": "1aB55P67iKNTFxbS4Rzofs",
-    "energy": "6cjFaVWqB4ATWj8tT31J1P",
-    "focus": "1cFz45Zb9sA9eb8aym60nU",
-    "calm": "3e64Rwz2pANOsr2LuglfCq",
-    "happy": "3Ddkjjj1BHXEPHnkIfBtfg"
+    "mindfulness": "4J9pEg2YdZekZNYeQ51Pum",
+    "surrealism": "0OShHgtBl5wC0pT9Y0ljwQ",
+    "resilience": "2garfO6rLVWteexAnupJ8a",
+    "memory": "3RcoPcrCHWtZBQcrPBeXVh",
+    "legacy": "58KWVTWZBrLhx2lqPBDpFM",
+    "reflection": "6KCluuukDiva0803j7ZSuF"
 }
 
 # === NLP Model ===
