@@ -2,6 +2,7 @@
 import os
 from dotenv import load_dotenv
 from pathlib import Path
+import json
 from sentence_transformers import SentenceTransformer, util
 
 # Load once globally
@@ -48,12 +49,12 @@ LOVABLE_API_URL = os.getenv("LOVABLE_API_URL")
 
 # === Primary Playlist Mapping (Used by You) ===
 SPOTIFY_PLAYLISTS = {
-    "mindfulness": "4J9pEg2YdZekZNYeQ51Pum",
-    "surrealism": "0OShHgtBl5wC0pT9Y0ljwQ",
-    "resilience": "2garfO6rLVWteexAnupJ8a",
-    "memory": "3RcoPcrCHWtZBQcrPBeXVh",
-    "legacy": "58KWVTWZBrLhx2lqPBDpFM",
-    "reflection": "6KCluuukDiva0803j7ZSuF"
+    "mindfulness": os.getenv("SPOTIFY_PLAYLIST_MINDFULNESS"),
+    "surrealism": os.getenv("SPOTIFY_PLAYLIST_SURREALISM"),
+    "resilience": os.getenv("SPOTIFY_PLAYLIST_RESILIENCE"),
+    "memory": os.getenv("SPOTIFY_PLAYLIST_MEMORY"),
+    "legacy": os.getenv("SPOTIFY_PLAYLIST_LEGACY"),
+    "reflection": os.getenv("SPOTIFY_PLAYLIST_REFLECTION"),
 }
 
 # === NLP Model ===
