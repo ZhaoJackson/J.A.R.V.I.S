@@ -123,3 +123,45 @@ def log_chat_message(source: str, message: str):
             (datetime.now().isoformat(), source, message)
         )
         conn.commit()
+
+# === Feedback Logging ===
+def log_music_feedback(
+    user_input: str,
+    detected_mood: str,
+    playlist: str,
+    song_name: str,
+    user_feedback: str,
+    source: str
+):
+    schema = """
+    CREATE TABLE IF NOT EXISTS feedback_logs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        timestamp TEXT,
+        user_input TEXT,
+        detected_mood TEXT,
+        playlist TEXT,
+        song_name TEXT,
+        user_feedback TEXT,
+        source TEXT
+    )
+    """
+    init_db(MUSIC_DB, schema)
+    with sqlite3.connect(MUSIC_DB) as conn:
+        conn.execute(
+            """
+            INSERT INTO feedback_logs (
+                timestamp, user_input, detected_mood,
+                playlist, song_name, user_feedback, source
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                datetime.now().isoformat(),
+                user_input,
+                detected_mood,
+                playlist,
+                song_name,
+                user_feedback,
+                source
+            )
+        )
+        conn.commit()
