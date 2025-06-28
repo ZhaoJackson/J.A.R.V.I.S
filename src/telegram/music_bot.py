@@ -58,7 +58,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "user_input": user_input,
             "detected_mood": mood,
             "playlist": playlist,
-            "song_name": "random_song",  # Optional: update with real song if known
+            "song_name": "random_song",
         }
 
     else:
