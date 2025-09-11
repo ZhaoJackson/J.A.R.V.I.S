@@ -1,178 +1,135 @@
-# J.A.R.V.I.S. – Just A Rather Very Intelligent System 🎧🧠
+# J.A.R.V.I.S. – Simplified Emotional Support System 🧠🎵
 
-J.A.R.V.I.S. is a modular FastAPI-based personal assistant that detects mood from your diary entries and plays corresponding Spotify playlists. It integrates with:
+A streamlined AI assistant that provides emotional support through:
+- 🧠 **Emotion Analysis** using Ollama LLM
+- 📚 **Philosophical Wisdom** from ancient texts and psychology books  
+- 🎵 **Mood-based Music** via Spotify integration
+- 💬 **Telegram Bot** for easy interaction
 
-- ✅ **Ollama LLM** for natural language mood analysis  
-- ✅ **Spotify API** for mood-driven music playback  
-- ✅ **SQLite** logging system for diary, mood, and music history  
+## 🚀 Quick Start
 
----
-
-## 📦 Project Structure
-
-```
-J.A.R.V.I.S/
-├── main.py                    
-├── bot_launcher.py            
-├── requirements.txt
-├── .env
-│
-├── src/
-│   ├── application/           
-│   │   ├── mood_analyzer.py   
-│   │   ├── spotify_player.py      
-│   │   └── db_manager.py         
-│   │
-│   ├── interaction/
-│   │   └── music_mood/
-│   │       └── music_vs_mood.py
-│   │
-│   ├── voice_manager/
-│   │   └── voice_routes.py
-│   │
-│   ├── telegram/
-│   │   └── handler.py
-│   │
-│   └── fastapi_routes/
-│       ├── log_routes.py
-│       ├── mood_routes.py
-│       └── music_routes.py
-│
-├── db/
-│   ├── diary.db
-│   ├── mood.db
-│   ├── music.db
-│   └── chat_history.db
-```
-
----
-
-## ⚙️ Setup Instructions
-
-### 1. Create `.env` File
-
-```
-SPOTIPY_CLIENT_ID=your_spotify_client_id
-SPOTIPY_CLIENT_SECRET=your_spotify_client_secret
-SPOTIPY_REDIRECT_URI=your url
-OLLAMA_URL=your url
-OLLAMA_MODEL=your model
-```
-
-> ⚠️ You need a Spotify **Premium** account and active device for playback.
-
----
-
-### 2. Install Requirements
-
+### 1. Setup Environment
 ```bash
-conda create -n ollama_env python=3.9
-conda activate ollama_env
+# Create conda environment
+conda create -n jarvis_env python=3.9
+conda activate jarvis_env
+
+# Install dependencies
 pip install -r requirements.txt
 ```
 
----
-
-### 3. Run the Server for FastAPI
-
+### 2. Configure Environment Variables
+Create `.env` file:
 ```bash
-uvicorn main:app --reload --port 8001
+# Ollama Configuration
+OLLAMA_URL=http://localhost:11434
+OLLAMA_MODEL=llama3
+
+# Telegram Bot
+TELEGRAM_BOT_TOKEN_PHILOSOPHY=your_telegram_bot_token
+
+# Spotify (Optional - will use simulation mode if not configured)
+SPOTIPY_CLIENT_ID=your_spotify_client_id
+SPOTIPY_CLIENT_SECRET=your_spotify_client_secret
+SPOTIPY_REDIRECT_URI=http://localhost:8080/callback
 ```
 
-FastAPI app will be available at: [http://127.0.0.1:8001/docs](http://127.0.0.1:8001/docs)
-
-### 4. run telegram app via running bot_launcher.py
-
-### 5. Run the ngrok for voice interaction
-
+### 3. Run JARVIS
 ```bash
-ngrok http 8001
+python bot_launcher.py
 ```
 
-ngrok app will be available at: [https://4e55-209-2-47-30.ngrok-free.app](https://4e55-209-2-47-30.ngrok-free.app)
-
----
-
-## 🧪 API Endpoints
-
-### 1. Log a Diary Entry and Auto-Play Music
-
-```bash
-curl -X POST http://127.0.0.1:8001/api/analyze-mood-and-play \
-  -H "accept: application/json" \
-  -H "Content-Type: application/json" \
-  -d '{"diary_entry": "I feel burned out but tried to stay calm by walking in the park."}'
-```
-
-**Response:**
-
-```json
-{
-  "diary_entry": "...",
-  "mood": "calm",
-  "music": {
-    "status": "playing",
-    "device": "YourDevice",
-    "mood": "calm"
-  }
-}
-```
-
----
-
-### 2. Play Music Manually by Mood
-
-```bash
-curl -X GET "http://127.0.0.1:8001/api/music/play?mood=happy"
-```
-
----
-
-### 3. Retrieve All Logs
-
-```bash
-curl -X GET http://127.0.0.1:8001/api/logs
-```
-
----
-
-## 🎶 Supported Moods
+## 📁 Project Structure
 
 ```
-happy, sad, calm, angry, focused,
-joyful, frustrated, peaceful, excited, heartbroken, studying, relaxed, neutral, unsure
+J.A.R.V.I.S/
+├── main.py                   # Core JARVIS logic
+├── bot_launcher.py           # Bot launcher
+├── analyze_emotions.py       # Data analysis & visualization
+├── src/
+│   ├── telegram_bot.py      # Telegram integration
+│   ├── commonconst.py       # All configuration (no hardcoding)
+│   ├── application/
+│   │   ├── mood_analyzer.py    # Emotion detection
+│   │   ├── philosopher.py      # Philosophy matching
+│   │   ├── music_player.py     # Real Spotify integration
+│   │   └── db_manager.py       # Comprehensive logging
+│   ├── interaction/music_mood/
+│   │   └── music_vs_mood.py    # Music-emotion matching
+│   └── book/                   # Philosophy books (JSON)
+│       ├── analects.json
+│       ├── iching.json
+│       ├── mencius.json
+│       ├── positive_psy.json
+│       ├── social_psy.json
+│       └── tao_te_ching.json
+└── db/
+    ├── emotion_logs.db         # Comprehensive emotion logging
+    ├── emotion_history.csv     # Exportable data
+    └── emotion_analysis.png    # Visualization charts
 ```
 
----
+## 🔄 How It Works
 
-## ✅ Features
+1. **User Input**: Send emotional message via Telegram
+2. **Emotion Analysis**: Ollama analyzes the emotion
+3. **Philosophy Matching**: AI selects most relevant philosophy book
+4. **Quote Extraction**: Finds relevant quotes using semantic similarity
+5. **Music Selection**: Matches emotion to Spotify playlist
+6. **Response**: Combines philosophical wisdom with music recommendation
 
-- 🔁 Automatically stores diary and mood logs  
-- 🤖 Uses Ollama’s LLM to infer your emotional state  
-- 🎧 Starts playback based on mood using Spotify API  
-- 🔍 Simple curl or REST interaction (frontend optional)  
+## 🎵 Spotify Integration
 
----
+- **With Credentials**: Plays actual playlists on your devices
+- **Without Credentials**: Simulation mode with realistic responses
+- **Auto-Detection**: System automatically detects availability
 
-## 🛡️ Security
+## 📚 Philosophy Books Included
 
-- All credentials are stored in `.env`  
-- API runs locally by default (safe for personal use)  
+- **Analects** - Confucian wisdom
+- **I Ching** - Ancient Chinese divination
+- **Mencius** - Confucian philosophy
+- **Tao Te Ching** - Taoist philosophy
+- **Positive Psychology** - Modern psychological concepts
+- **Social Psychology** - Social behavior insights
 
----
+## 💡 Example Usage
 
-## 💡 Future Ideas
+**User**: "I feel stressed about my upcoming presentation"
 
-- Voice input and playback with ElevenLabs or Coqui  
-- Daily summary of moods + music logs  
-- Integration with n8n or Telegram  
+**JARVIS Response**:
+- 🧠 **Emotion**: Anxious
+- 📚 **Wisdom from Analects**: *[Relevant quote about preparation and confidence]*
+- 🎵 **Music**: Resilience playlist now playing on iPhone
 
----
+## 📊 Data Analysis Features
 
-## 🤖 Author
+**Commands Available:**
+- `/status` - View system status and emotion statistics
+- `/export` - Export emotion history to CSV
+- `python analyze_emotions.py` - Generate visualization charts
 
-**Jackson Zhao** · Data Scientist & AI Builder · [GitHub](https://github.com/)
+**What Gets Logged:**
+- Timestamp of each interaction
+- Your emotional input text
+- Detected emotion
+- Selected philosophy book
+- Philosopher's response
+- Music playlist played
+- Spotify device used
 
----
+## 🛠️ Technical Features
 
-> _“I am J.A.R.V.I.S. — your mood-aware, music-triggering AI sidekick.”_
+- **Semantic Matching**: Uses sentence transformers for intelligent book/music selection
+- **Relative Paths**: All paths are relative for easy deployment
+- **Minimal Dependencies**: Streamlined codebase with only essential components
+- **Error Resilience**: Graceful fallbacks when services are unavailable
+- **Single Bot**: Unified Telegram bot handling all functionality
+
+## 🎯 Core Philosophy
+
+This version focuses on:
+- **Simplicity**: Minimal code, maximum impact
+- **Reliability**: Robust error handling and fallbacks  
+- **Intelligence**: Semantic matching for better responses
+- **Accessibility**: Easy setup and deployment

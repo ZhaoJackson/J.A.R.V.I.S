@@ -1,167 +1,96 @@
-# src/application/db_manager.py
+# src/application/db_manager.py - Direct CSV Emotion Logging
 
-import sqlite3
+import csv
+import pandas as pd
 from datetime import datetime
-from src.commonconst import DIARY_DB, MOOD_DB, MUSIC_DB, CHAT_DB
+from pathlib import Path
+from src.commonconst import CSV_EXPORT_PATH
 
-# === Base DB Init Function ===
-def init_db(path: str, schema: str):
-    conn = sqlite3.connect(path)
-    cursor = conn.cursor()
-    cursor.execute(schema)
-    conn.commit()
-    conn.close()
+def ensure_csv_exists():
+    """Ensure the CSV file exists with proper headers"""
+    if not CSV_EXPORT_PATH.exists():
+        with open(CSV_EXPORT_PATH, 'w', newline='', encoding='utf-8') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow([
+                'Timestamp', 'User Input', 'Detected Emotion', 'Philosophy Book',
+                'Music Playlist', 'Music Status', 'Session ID'
+            ])
 
-# === Diary Entry Logging ===
-def log_diary_entry(content: str):
-    schema = """
-    CREATE TABLE IF NOT EXISTS diary (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        timestamp TEXT,
-        content TEXT
-    )
-    """
-    init_db(DIARY_DB, schema)
-    with sqlite3.connect(DIARY_DB) as conn:
-        conn.execute(
-            "INSERT INTO diary (timestamp, content) VALUES (?, ?)",
-            (datetime.now().isoformat(), content)
-        )
-        conn.commit()
-
-# === Mood Analysis Logging ===
-def log_mood_analysis(input_text: str, mood: str):
-    schema = """
-    CREATE TABLE IF NOT EXISTS mood_logs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        timestamp TEXT,
-        user_input TEXT,
-        detected_mood TEXT
-    )
-    """
-    init_db(MOOD_DB, schema)
-    with sqlite3.connect(MOOD_DB) as conn:
-        conn.execute(
-            "INSERT INTO mood_logs (timestamp, user_input, detected_mood) VALUES (?, ?, ?)",
-            (datetime.now().isoformat(), input_text, mood)
-        )
-        conn.commit()
-
-# === Music Playback Logging ===
-def log_music_playback(mood: str, playlist_uri: str, device: str):
-    schema = """
-    CREATE TABLE IF NOT EXISTS music_playback (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        timestamp TEXT,
-        mood TEXT,
-        playlist_uri TEXT,
-        device TEXT
-    )
-    """
-    init_db(MUSIC_DB, schema)
-    with sqlite3.connect(MUSIC_DB) as conn:
-        conn.execute(
-            "INSERT INTO music_playback (timestamp, mood, playlist_uri, device) VALUES (?, ?, ?, ?)",
-            (datetime.now().isoformat(), mood, playlist_uri, device)
-        )
-        conn.commit()
-
-# === Optional: Log Full Track-to-Mood Matching Scores ===
-def log_music_play(
-    mood_text: str,
-    song_name: str,
-    artist: str,
-    playlist: str,
-    similarity: float,
-    valence: float,
-    energy: float,
-    acousticness: float
-):
-    schema = """
-    CREATE TABLE IF NOT EXISTS music_logs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        timestamp TEXT,
-        mood_text TEXT,
-        song_name TEXT,
-        artist TEXT,
-        playlist TEXT,
-        similarity REAL,
-        valence REAL,
-        energy REAL,
-        acousticness REAL
-    )
-    """
-    init_db(MUSIC_DB, schema)
-    with sqlite3.connect(MUSIC_DB) as conn:
-        conn.execute("""
-            INSERT INTO music_logs (
-                timestamp, mood_text, song_name, artist, playlist,
-                similarity, valence, energy, acousticness
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """, (
-            datetime.now().isoformat(),
-            mood_text, song_name, artist, playlist,
-            similarity, valence, energy, acousticness
-        ))
-        conn.commit()
-
-# === Chat History Logging ===
-def log_chat_message(source: str, message: str):
-    schema = """
-    CREATE TABLE IF NOT EXISTS chat_history (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        timestamp TEXT,
-        source TEXT,
-        message TEXT
-    )
-    """
-    init_db(CHAT_DB, schema)
-    with sqlite3.connect(CHAT_DB) as conn:
-        conn.execute(
-            "INSERT INTO chat_history (timestamp, source, message) VALUES (?, ?, ?)",
-            (datetime.now().isoformat(), source, message)
-        )
-        conn.commit()
-
-# === Feedback Logging ===
-def log_music_feedback(
+def log_emotion_session(
     user_input: str,
-    detected_mood: str,
-    playlist: str,
-    song_name: str,
-    user_feedback: str,
-    source: str
+    detected_emotion: str,
+    selected_book: str = "none",
+    philosopher_response: str = None,
+    music_playlist: str = "none",
+    music_device: str = "none",
+    music_status: str = "none",
+    session_id: str = "default"
 ):
-    schema = """
-    CREATE TABLE IF NOT EXISTS feedback_logs (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        timestamp TEXT,
-        user_input TEXT,
-        detected_mood TEXT,
-        playlist TEXT,
-        song_name TEXT,
-        user_feedback TEXT,
-        source TEXT
-    )
-    """
-    init_db(MUSIC_DB, schema)
-    with sqlite3.connect(MUSIC_DB) as conn:
-        conn.execute(
-            """
-            INSERT INTO feedback_logs (
-                timestamp, user_input, detected_mood,
-                playlist, song_name, user_feedback, source
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                datetime.now().isoformat(),
-                user_input,
-                detected_mood,
-                playlist,
-                song_name,
-                user_feedback,
-                source
-            )
-        )
-        conn.commit()
+    """Log emotion session directly to CSV file"""
+    ensure_csv_exists()
+    
+    # Append new row to CSV
+    with open(CSV_EXPORT_PATH, 'a', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow([
+            datetime.now().isoformat(),
+            user_input,
+            detected_emotion,
+            selected_book,
+            music_playlist,
+            music_status,
+            session_id
+        ])
+    
+    print(f"📊 Logged to CSV: {detected_emotion} emotion from {session_id}")
+
+def get_emotion_statistics():
+    """Get emotion statistics directly from CSV"""
+    ensure_csv_exists()
+    
+    try:
+        df = pd.read_csv(CSV_EXPORT_PATH)
+        
+        if df.empty:
+            return {
+                "top_emotions": [],
+                "top_books": [],
+                "recent_activity": [],
+                "total_sessions": 0
+            }
+        
+        # Most common emotions
+        emotion_counts = df['Detected Emotion'].value_counts().head(10)
+        top_emotions = [(emotion, count) for emotion, count in emotion_counts.items()]
+        
+        # Most used books
+        book_counts = df['Philosophy Book'].value_counts()
+        top_books = [(book, count) for book, count in book_counts.items()]
+        
+        # Recent activity
+        df['Date'] = pd.to_datetime(df['Timestamp']).dt.date
+        daily_counts = df['Date'].value_counts().sort_index().tail(7)
+        recent_activity = [(str(date), count) for date, count in daily_counts.items()]
+        
+        return {
+            "top_emotions": top_emotions,
+            "top_books": top_books,
+            "recent_activity": recent_activity,
+            "total_sessions": len(df)
+        }
+        
+    except Exception as e:
+        print(f"❌ Error reading CSV statistics: {e}")
+        return {
+            "top_emotions": [],
+            "top_books": [],
+            "recent_activity": [],
+            "total_sessions": 0
+        }
+
+def export_emotions_to_csv():
+    """Return the CSV path (already exists as direct logging)"""
+    ensure_csv_exists()
+    return CSV_EXPORT_PATH
+
+
