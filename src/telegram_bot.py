@@ -72,12 +72,17 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
         result = process_emotion_request_safe(user_input, user_id)
         
         # Format response (plain text to avoid Markdown parsing errors)
-        response = f"""🧠 Emotion Detected: {result['emotion']}
+        books_used = result['philosophy'].get('books_referenced', ['unknown'])
+        book_display = books_used[0] if len(books_used) == 1 else f"{len(books_used)} books"
+        
+        response = f"""🧠 Emotion Detected: {result['emotion']} (confidence: {result.get('confidence', 0):.2f})
 
-📚 Wisdom from {result['philosophy']['book']}:
+📚 Wisdom from {book_display}:
 {result['philosophy']['response']}
 
-🎵 Music: {result['music']['message']}"""
+🎵 Music: {result['music']['message']}
+
+📈 Learning: {result.get('learning', {}).get('learning_confidence', 0):.2f} confidence"""
         
         await update.message.reply_text(response)
         

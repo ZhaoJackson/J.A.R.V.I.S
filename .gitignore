@@ -23,14 +23,13 @@ venv/
 
 # JARVIS specific - ignore sensitive data and large files
 book/
-db/
+db/*
 *.pkl
 *.faiss
 *.csv
 *.png
 
-# Keep structure but ignore content
-!book/.gitkeep
+# Keep structure but ignore all db folder contents
 !db/.gitkeep
 
 # Output

@@ -92,5 +92,3 @@ def export_emotions_to_csv():
     """Return the CSV path (already exists as direct logging)"""
     ensure_csv_exists()
     return CSV_EXPORT_PATH
-
-
