@@ -1,9 +1,13 @@
-# analyze_emotions.py - Emotion Data Analysis and Visualization
+# src/analyze_emotions.py - Emotion Data Analysis and Visualization
+
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
-from src.commonconst import CSV_EXPORT_PATH
+from src.commonconst import CSV_EXPORT_PATH, BOT_NAME
 from src.application.db_manager import get_emotion_statistics
 
 def create_emotion_charts():
@@ -18,7 +22,7 @@ def create_emotion_charts():
         
         # Create a figure with subplots
         fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(15, 10))
-        fig.suptitle('JARVIS Emotion Analysis Dashboard', fontsize=16)
+        fig.suptitle(f'{BOT_NAME} Emotion Analysis Dashboard', fontsize=16)
         
         # 1. Most common emotions
         emotion_counts = df['Detected Emotion'].value_counts().head(10)
@@ -68,7 +72,7 @@ def print_emotion_summary():
     stats = get_emotion_statistics()
     
     print("=" * 50)
-    print("📊 JARVIS EMOTION ANALYSIS SUMMARY")
+    print(f"📊 {BOT_NAME} EMOTION ANALYSIS SUMMARY")
     print("=" * 50)
     
     print(f"📈 Total Sessions: {stats['total_sessions']}")

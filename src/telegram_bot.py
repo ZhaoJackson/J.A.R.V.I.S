@@ -6,69 +6,30 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from telegram import Update
 from telegram.ext import ApplicationBuilder, MessageHandler, CommandHandler, ContextTypes, filters
-from src.application.db_manager import export_emotions_to_csv, get_emotion_statistics, log_emotion_session
-from src.application.music_player import is_spotify_configured
-from src.application.mood_analyzer import analyze_emotion
-from src.application.philosopher import provide_emotional_support
-from src.interaction.music_mood.music_vs_mood import play_music_for_emotion
+from src.application.db_manager import export_emotions_to_csv, get_emotion_statistics
+from src.application.music_engine import is_spotify_configured
+from src.application.core_engine import jarvis_core
 from src.commonconst import (
-    TELEGRAM_BOT_TOKEN_PHILOSOPHY, 
+    TELEGRAM_BOT_TOKEN, 
     WELCOME_MESSAGE, 
     ERROR_MESSAGE_TEMPLATE,
     BOT_NAME
 )
 
 def process_emotion_request_safe(text: str, user_id: str = "default") -> dict:
-    """Safe version of emotion processing that doesn't block on Spotify"""
+    """Safe version using streamlined core engine with self-learning"""
     try:
-        # Analyze emotion
-        emotion = analyze_emotion(text)
-        
-        # Get philosophical support
-        philosophy_result = provide_emotional_support(text, emotion)
-        
-        # Try music but don't block on Spotify errors
-        try:
-            music_result = play_music_for_emotion(text)
-        except Exception as e:
-            music_result = {
-                "status": "error",
-                "playlist": "none",
-                "device": None,
-                "message": f"❌ Music unavailable: {str(e)}"
-            }
-        
-        # Log the session
-        log_emotion_session(
-            user_input=text,
-            detected_emotion=emotion,
-            selected_book=philosophy_result.get("book_used"),
-            philosopher_response=philosophy_result.get("response"),
-            music_playlist=music_result.get("playlist"),
-            music_device=music_result.get("device"),
-            music_status=music_result.get("status"),
-            session_id=user_id
-        )
-        
-        return {
-            "status": "success",
-            "emotion": emotion,
-            "philosophy": {
-                "book": philosophy_result.get("book_used"),
-                "response": philosophy_result.get("response")
-            },
-            "music": {
-                "playlist": music_result.get("playlist"),
-                "device": music_result.get("device"),
-                "message": music_result.get("message")
-            }
-        }
+        # Use the streamlined core engine
+        result = jarvis_core.process_emotion(text, user_id)
+        return result
     except Exception as e:
+        print(f"❌ Core engine error: {e}")
         return {
             "status": "error",
             "emotion": "unknown",
-            "philosophy": {"book": "none", "response": f"Philosophy error: {str(e)}"},
-            "music": {"playlist": "none", "device": None, "message": f"Music error: {str(e)}"}
+            "philosophy": {"book": "none", "response": f"System error: {str(e)}", "books_referenced": []},
+            "music": {"playlist": "none", "device": None, "message": f"Music error: {str(e)}"},
+            "learning": {"learning_confidence": 0.0}
         }
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -127,7 +88,7 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 def run_telegram_bot():
     """Run the Telegram bot"""
-    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN_PHILOSOPHY).build()
+    app = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
     
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("status", status))

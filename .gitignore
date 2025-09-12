@@ -1,15 +1,38 @@
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
+
+# Environment
 .env
 .venv
 env/
 venv/
+
+# IDEs
 .vscode/
 .idea/
+
+# System files
 .DS_Store
 **/.DS_Store
+
+# Databases and data files
 *.db
+.cache
+
+# JARVIS specific - ignore sensitive data and large files
+book/
+db/
+*.pkl
+*.faiss
+*.csv
+*.png
+
+# Keep structure but ignore content
+!book/.gitkeep
+!db/.gitkeep
+
+# Output
 output/*
 !output/.gitkeep
-.cache
